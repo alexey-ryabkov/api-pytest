@@ -1,0 +1,7 @@
+.vscode
+.idea
+.DS_STORE
+Thumbs.db
+__pycache__/
+*bckp*
+tmp
