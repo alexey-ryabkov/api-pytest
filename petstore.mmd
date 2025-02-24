@@ -1,0 +1,38 @@
+erDiagram
+    Pet {
+        int id PK
+        string name
+        string category
+        string status
+    }
+
+    User {
+        int id PK
+        string username
+        string email
+    }
+
+    Order {
+        int id PK
+        int petId FK
+        int userId FK
+        int quantity
+        datetime shipDate
+        string status
+        bool complete
+    }
+
+    Tag {
+        int id PK
+        string name
+    }
+
+    Category {
+        int id PK
+        string name
+    }
+
+    Pet ||--o{ Tag : "has"
+    Pet }o--|| Category : "belongs to<br />(Pet.category = Category.id)"
+    Order ||--|| Pet : "ordered for<br />(Order.petId = Pet.id)"
+    Order }o--|| User : "placed by<br />(Order.userId = User.id)"
