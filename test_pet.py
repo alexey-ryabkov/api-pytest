@@ -1,66 +1,63 @@
+import time
 import pytest
-import requests
-
-API_BASE_URL = "https://petstore.swagger.io/v2/pet"
+from shared.petstore_api import get_petstore_api
+from shared.assert_helper import (
+    assert_status_code_is_ok,
+    assert_status_code_is_not_found,
+    assert_fields_match,
+)
 
 
 @pytest.fixture
-def create_pet():
-    pet_data = {
+def pet_api():
+    return get_petstore_api("pet")
+
+
+@pytest.fixture
+def pet_data():
+    return {
         "id": 12345,
         "name": "Fluffy",
         "category": {"id": 1, "name": "Cats"},
         "status": "available",
     }
-    response = requests.post(API_BASE_URL, json=pet_data)
-    assert response.status_code == 200
-    return pet_data
 
 
 @pytest.fixture
-def pet_id(create_pet):
-    return create_pet["id"]
+def pet_id(pet_data):
+    return pet_data["id"]
 
 
-def test_create_pet(create_pet):
-    response = requests.get(f"{API_BASE_URL}/{create_pet['id']}")
-    assert response.status_code == 200
-    pet = response.json()
-    assert pet["name"] == create_pet["name"]
-    assert pet["category"]["name"] == create_pet["category"]["name"]
-    assert pet["status"] == create_pet["status"]
+def test_create_pet(pet_api, pet_data):
+    status_code, pet = pet_api.create(pet_data)
+    assert_status_code_is_ok(status_code)
+    assert_fields_match(pet, pet_data, ["name", ["category", "name"], "status"])
+    time.sleep(5)  # waiting for the api server to apply changes
 
 
-def test_update_pet(pet_id):
-    updated_data = {
-        "id": pet_id,
-        "name": "Fluffy updated",
-        "category": {"id": 1, "name": "Cats"},
-        "status": "available",
-    }
-    response = requests.put(f"{API_BASE_URL}/{pet_id}", json=updated_data)
-    assert response.status_code == 200
-    pet = response.json()
-    assert pet["name"] == "Fluffy updated"
-
-
-def test_update_pet_status(pet_id):
-    updated_data = {"id": pet_id, "status": "sold"}
-    response = requests.put(f"{API_BASE_URL}/{pet_id}", json=updated_data)
-    assert response.status_code == 200
-    pet = response.json()
-    assert pet["status"] == "sold"
-
-
-def test_get_pet(pet_id):
-    response = requests.get(f"{API_BASE_URL}/{pet_id}")
-    assert response.status_code == 200
-    pet = response.json()
+def test_recieve_pet(pet_api, pet_id):
+    status_code, pet = pet_api.recieve(pet_id)
+    assert_status_code_is_ok(status_code)
     assert pet["id"] == pet_id
 
 
-def test_delete_pet(pet_id):
-    response = requests.delete(f"{API_BASE_URL}/{pet_id}")
-    assert response.status_code == 200
-    response = requests.get(f"{API_BASE_URL}/{pet_id}")
-    assert response.status_code == 404
+def test_update_pet(pet_api, pet_data):
+    pet_data["name"] = "Snowball"
+    status_code, pet = pet_api.update(pet_data)
+    assert_status_code_is_ok(status_code)
+    assert_fields_match(pet, pet_data, ["name"])
+
+
+def test_update_pet_status(pet_api, pet_id):
+    update_data = {"id": pet_id, "status": "sold"}
+    status_code, pet = pet_api.update(update_data)
+    assert_status_code_is_ok(status_code)
+    assert_fields_match(pet, update_data, ["status"])
+
+
+def test_delete_pet(pet_api, pet_id):
+    status_code, _ = pet_api.delete(pet_id)
+    assert_status_code_is_ok(status_code)
+    time.sleep(5)  # waiting for the api server to apply the request
+    status_code, _ = pet_api.recieve(pet_id)
+    assert_status_code_is_not_found(status_code)

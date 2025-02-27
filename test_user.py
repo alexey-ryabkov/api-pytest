@@ -1,81 +1,73 @@
+import time
 import pytest
-import requests
-
-API_BASE_URL = "https://petstore.swagger.io/v2/user"
+from shared.petstore_api import get_petstore_api
+from shared.assert_helper import (
+    assert_status_code_is_ok,
+    assert_status_code_is_not_found,
+)
 
 
 @pytest.fixture
-def create_user():
-    user_data = {
-        "id": 1001,
-        "username": "testuser",
+def user_api():
+    return get_petstore_api("user")
+
+
+@pytest.fixture
+def user_data():
+    return {
+        "id": 54321,
+        "username": "_test_user_",
         "firstName": "Alexey",
         "lastName": "Alexeev",
         "email": "a.alexeev@example.com",
-        "password": "123456",
+        "password": "qwerty",
         "phone": "+79999999999",
         "userStatus": 1,
     }
-    response = requests.post(API_BASE_URL, json=user_data)
-    assert response.status_code == 200
-    return user_data
 
 
 @pytest.fixture
-def user_name(create_user):
-    return create_user["username"]
+def user_name(user_data):
+    return user_data["username"]
 
 
-def test_create_user(create_user):
-    response = requests.get(f"{API_BASE_URL}/{create_user['username']}")
-    assert response.status_code == 200
-    user = response.json()
-    assert user["username"] == create_user["username"]
-    assert user["email"] == create_user["email"]
+def test_create_user(user_api, user_data):
+    status_code, _ = user_api.create(user_data)
+    assert_status_code_is_ok(status_code)
+    time.sleep(5)  # waiting for the api server to apply changes
 
 
-def test_get_user(user_name):
-    response = requests.get(f"{API_BASE_URL}/{user_name}")
-    assert response.status_code == 200
-    user = response.json()
+def test_recieve_user(user_api, user_name):
+    status_code, user = user_api.recieve(user_name)
+    assert_status_code_is_ok(status_code)
     assert user["username"] == user_name
 
 
-def test_update_user(user_name):
-    updated_data = {
-        "id": 1001,
-        "username": "testuser",
-        "firstName": "Sebastian",
-        "lastName": "Alexeev",
-        "email": "s.alexeev@example.com",
-        "password": "123456",
-        "phone": "+79999999999",
-        "userStatus": 1,
-    }
-    response = requests.put(f"{API_BASE_URL}/{user_name}", json=updated_data)
-    assert response.status_code == 200
-    user = response.json()
-    assert user["firstName"] == "Sebastian"
-    assert user["email"] == "s.alexeev@example.com"
+def test_update_user(user_api, user_data, user_name):
+    user_data["firstName"] = "Sebastian"
+    user_data["email"] = "s.alexeev@example.com"
+    status_code, _ = user_api.update(user_data, user_name)
+    assert_status_code_is_ok(status_code)
 
 
-def test_user_login(user_name):
-    response = requests.get(
-        f"{API_BASE_URL}/login",
-        params={"username": user_name, "password": "securepass"},
+def test_user_login(user_api, user_data):
+    status_code, result = user_api.perform(
+        "login",
+        params={"username": user_data["username"], "password": user_data["password"]},
     )
-    assert response.status_code == 200
-    assert "logged in user session" in response.json().get("message", "")
+    assert_status_code_is_ok(status_code)
+    assert "logged in user session" in result.get("message", "")
 
 
-def test_user_logout():
-    response = requests.get(f"{API_BASE_URL}/logout")
-    assert response.status_code == 200
-    assert "ok" in response.json().get("message", "").lower()
+def test_user_logout(user_api):
+    status_code, result = user_api.perform("logout")
+    assert_status_code_is_ok(status_code)
+    assert "ok" in result.get("message", "").lower()
 
 
-def test_delete_user(user_name):
-    response = requests.delete(f"{API_BASE_URL}/{user_name}")
-    assert response.status_code == 200
-    response = requests.get(f"{API_BASE_URL}/{user_name}")
-    assert response.status_code == 404
+def test_delete_user(user_api, user_name):
+    status_code, _ = user_api.delete(user_name)
+    assert_status_code_is_ok(status_code)
+    time.sleep(20)  # waiting for the api server to apply the request
+    status_code, _ = user_api.recieve(user_name)
+    assert_status_code_is_not_found(status_code)
