@@ -1,0 +1,121 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"This test verifies that an existing pet can be retrieved by ID.","710","Retrieve an existing pet","","Fri Feb 28 18:36:58 MSK 2025","passed","Fri Feb 28 18:36:59 MSK 2025","","Petstore API Tests","",""
+"This test verifies that the pet's name can be updated.
+
+### Test input
+**Pet data:**
+
+```json
+{
+  ""id"": 12345,
+  ""name"": ""Snowball"",
+  ""category"": {
+    ""id"": 1,
+    ""name"": ""Cats""
+  },
+  ""photoUrls"": [
+    ""https://example.com/photo""
+  ],
+  ""tags"": [
+    {
+      ""id"": 1,
+      ""name"": ""sometag""
+    }
+  ],
+  ""status"": ""available""
+}
+```","690","Update a pet","","Fri Feb 28 18:36:59 MSK 2025","passed","Fri Feb 28 18:37:00 MSK 2025","","Petstore API Tests","",""
+"This test verifies that a user can be deleted and is no longer retrievable.","866","Delete a user","","Fri Feb 28 18:37:21 MSK 2025","passed","Fri Feb 28 18:37:22 MSK 2025","","Petstore API Tests","",""
+"This test verifies that an existing order can be retrieved by ID.","690","Retrieve an existing order","","Fri Feb 28 18:37:07 MSK 2025","passed","Fri Feb 28 18:37:08 MSK 2025","","Petstore API Tests","",""
+"Creates a new user and verifies the response contains correct data.
+
+### Test input
+**User data:**
+
+```json
+{
+  ""id"": 633181,
+  ""username"": ""_test__user_"",
+  ""firstName"": ""Alexey"",
+  ""lastName"": ""Alexeev"",
+  ""email"": ""a.alexeev@example.com"",
+  ""password"": ""qwerty"",
+  ""phone"": ""+79999999999"",
+  ""userStatus"": 1
+}
+```","702","Create a user","","Fri Feb 28 18:37:14 MSK 2025","passed","Fri Feb 28 18:37:14 MSK 2025","","Petstore API Tests","",""
+"Creates a new order and verifies the response contains correct data.
+
+### Test input
+**Order data:**
+
+```json
+{
+  ""id"": 314314,
+  ""petId"": 12345,
+  ""quantity"": 2,
+  ""shipDate"": ""2025-02-25T15:00:00.000Z"",
+  ""status"": ""placed"",
+  ""complete"": false
+}
+```","694","Create an order","","Fri Feb 28 18:37:05 MSK 2025","passed","Fri Feb 28 18:37:06 MSK 2025","","Petstore API Tests","",""
+"This test verifies that the user can be updated.
+
+### Test input
+**User data:**
+
+```json
+{
+  ""id"": 633181,
+  ""username"": ""_test__user_"",
+  ""firstName"": ""Sebastian"",
+  ""lastName"": ""Alexeev"",
+  ""email"": ""s.alexeev@example.com"",
+  ""password"": ""qwerty"",
+  ""phone"": ""+79999999999"",
+  ""userStatus"": 1
+}
+```","686","Update a user","","Fri Feb 28 18:37:18 MSK 2025","passed","Fri Feb 28 18:37:18 MSK 2025","","Petstore API Tests","",""
+"Creates a new pet and verifies the response contains correct data.
+
+### Test input
+**Pet data:**
+
+```json
+{
+  ""id"": 12345,
+  ""name"": ""Fluffy"",
+  ""category"": {
+    ""id"": 1,
+    ""name"": ""Cats""
+  },
+  ""photoUrls"": [
+    ""https://example.com/photo""
+  ],
+  ""tags"": [
+    {
+      ""id"": 1,
+      ""name"": ""sometag""
+    }
+  ],
+  ""status"": ""available""
+}
+```","926","Create a pet","","Fri Feb 28 18:36:57 MSK 2025","passed","Fri Feb 28 18:36:58 MSK 2025","","Petstore API Tests","",""
+"This test verifies that an existing user can be retrieved by use name.","681","Retrieve an existing user","","Fri Feb 28 18:37:16 MSK 2025","passed","Fri Feb 28 18:37:17 MSK 2025","","Petstore API Tests","",""
+"This test verifies that the user can log in.
+
+### Test input
+**Log in params:**
+
+```json
+{
+  ""username"": ""_test__user_"",
+  ""password"": ""qwerty""
+}
+```","720","Log in a user","","Fri Feb 28 18:37:17 MSK 2025","passed","Fri Feb 28 18:37:18 MSK 2025","","Petstore API Tests","",""
+"","726","Log out a user","","Fri Feb 28 18:37:18 MSK 2025","passed","Fri Feb 28 18:37:19 MSK 2025","","Petstore API Tests","",""
+"This test verifies that an order status can be retrieved and has appropriate value.","689","Retrieve an order status","","Fri Feb 28 18:37:08 MSK 2025","passed","Fri Feb 28 18:37:09 MSK 2025","","Petstore API Tests","",""
+"This test verifies that the pet's status can be updated.","700","Update a pet status","","Fri Feb 28 18:37:00 MSK 2025","passed","Fri Feb 28 18:37:00 MSK 2025","","Petstore API Tests","",""
+"This test verifies that inventory stats can be retrieved.","694","Retrieve inventory stats","","Fri Feb 28 18:37:13 MSK 2025","passed","Fri Feb 28 18:37:14 MSK 2025","","Petstore API Tests","",""
+"This test verifies that a pet can be deleted and is no longer retrievable.","889","Delete a pet","","Fri Feb 28 18:37:04 MSK 2025","passed","Fri Feb 28 18:37:05 MSK 2025","","Petstore API Tests","",""
+"This test verifies that an order can be deleted and is no longer retrievable.","855","Delete an order","","Fri Feb 28 18:37:12 MSK 2025","passed","Fri Feb 28 18:37:13 MSK 2025","","Petstore API Tests","",""
