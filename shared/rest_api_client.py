@@ -1,5 +1,5 @@
 import requests
-
+import allure
 
 _API_REQUEST_TIMEOUT = 5
 
@@ -14,30 +14,38 @@ class RestApiClient:
 
     def create(self, data: dict, endpoint: str | None = None):
         """Sends a POST request to create a resource."""
-        response = self._session.post(self._process_endpoint(endpoint), json=data)
+        response = self._session.post(
+            self._process_endpoint("POST", endpoint), json=data
+        )
         return response.status_code, response.json()
 
     def recieve(self, endpoint: str):
         """Sends a GET request to retrieve a resource"""
-        response = self._session.get(self._process_endpoint(endpoint))
+        response = self._session.get(self._process_endpoint("GET", endpoint))
         return response.status_code, response.json()
 
     def update(self, data: dict, endpoint: str | None = None):
         """Sends a POST request to create a resource"""
-        response = self._session.put(self._process_endpoint(endpoint), json=data)
+        response = self._session.put(self._process_endpoint("PUT", endpoint), json=data)
         return response.status_code, response.json()
 
     def delete(self, endpoint: str):
         """Sends a DELETE request to remove a resource"""
-        response = self._session.delete(self._process_endpoint(endpoint))
+        response = self._session.delete(self._process_endpoint("DELETE", endpoint))
         return response.status_code, response.json()
 
     def perform(self, endpoint: str, params: dict | None = None):
         """Sends a command by GET request"""
-        response = self._session.get(self._process_endpoint(endpoint), params=params)
+        response = self._session.get(
+            self._process_endpoint("GET", endpoint), params=params
+        )
         return response.status_code, response.json()
 
-    def _process_endpoint(self, endpoint: str | None = None):
+    def _process_endpoint(
+        self,
+        request_type: str,
+        endpoint: str | None = None,
+    ):
         url = f"{self.base_url}/{endpoint.lstrip('/')}" if endpoint else self.base_url
-        print(f"Request {url}")
-        return url
+        with allure.step(f"Send {request_type} request to {url}"):
+            return url
