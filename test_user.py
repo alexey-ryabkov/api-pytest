@@ -9,7 +9,6 @@ from shared.assert_helper import (
 from shared.utils import (
     allure_test_desc_n_input_data,
     allure_annotation_fabric,
-    wait_server_apply_changes,
 )
 
 
@@ -29,8 +28,8 @@ def user_api():
 @allure.title("User data")
 def user_data():
     return {
-        "id": 54321,
-        "username": "_test_user_",
+        "id": 633181,
+        "username": "_test__user_",
         "firstName": "Alexey",
         "lastName": "Alexeev",
         "email": "a.alexeev@example.com",
@@ -41,7 +40,7 @@ def user_data():
 
 
 @pytest.fixture
-@allure.title("User ID")
+@allure.title("User name")
 def user_name(user_data):
     return user_data["username"]
 
@@ -56,31 +55,19 @@ def test_create_user(user_api, user_data):
     with allure.step("Send request to create a user"):
         status_code, _ = user_api.create(user_data)
     assert_status_code_is_ok(status_code)
-    wait_server_apply_changes(5)
 
 
 @allure_annotation(
     "Retrieve an existing user",
     "This test verifies that an existing user can be retrieved by use name.",
 )
-def test_recieve_user(user_api, user_name):
-    with allure.step("Send request to recieve a user"):
-        status_code, user = user_api.recieve(user_name)
+@pytest.mark.flaky(reruns=5, reruns_delay=1)
+def test_retrieve_user(user_api, user_name):
+    with allure.step("Send request to retrieve a user"):
+        status_code, user = user_api.retrieve(user_name)
     assert_status_code_is_ok(status_code)
     with allure.step("Verify user names match"):
         assert user["username"] == user_name
-
-
-@allure_annotation("Update a user")
-def test_update_user(user_api, user_data, user_name):
-    user_data["firstName"] = "Sebastian"
-    user_data["email"] = "s.alexeev@example.com"
-    allure_test_desc_n_input_data(
-        "This test verifies that the user can be updated.", user_data, "User data"
-    )
-    with allure.step("Send request to update a user name and email"):
-        status_code, _ = user_api.update(user_data, user_name)
-    assert_status_code_is_ok(status_code)
 
 
 @allure_annotation("Log in a user")
@@ -102,6 +89,18 @@ def test_user_login(user_api, user_data):
         assert "logged in user session" in result.get("message", "")
 
 
+@allure_annotation("Update a user")
+def test_update_user(user_api, user_data, user_name):
+    user_data["firstName"] = "Sebastian"
+    user_data["email"] = "s.alexeev@example.com"
+    allure_test_desc_n_input_data(
+        "This test verifies that the user can be updated.", user_data, "User data"
+    )
+    with allure.step("Send request to update a user name and email"):
+        status_code, _ = user_api.update(user_data, user_name)
+    assert_status_code_is_ok(status_code)
+
+
 @allure_annotation("Log out a user")
 def test_user_logout(user_api):
     with allure.step("Send request to user log out"):
@@ -115,11 +114,11 @@ def test_user_logout(user_api):
     "Delete a user",
     "This test verifies that a user can be deleted and is no longer retrievable.",
 )
+@pytest.mark.flaky(reruns=5, reruns_delay=1)
 def test_delete_user(user_api, user_name):
     with allure.step("Send request to delete a user"):
         status_code, _ = user_api.delete(user_name)
     assert_status_code_is_ok(status_code)
-    wait_server_apply_changes(20)
     with allure.step("Send request to get a user"):
-        status_code, _ = user_api.recieve(user_name)
-    assert_status_code_is_not_found(status_code)
+        status_code1, _ = user_api.retrieve(user_name)
+    assert_status_code_is_not_found(status_code1)

@@ -7,7 +7,6 @@ import allure
 
 from shared.petstore_api import API_BASE_URL
 
-# TODO брать из .env
 ALLURE_RESULT_DIR = "allure_results"
 ALLURE_ENV_FILE = f"{ALLURE_RESULT_DIR}/environment.properties"
 

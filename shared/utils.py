@@ -6,11 +6,6 @@ import allure
 from .petstore_api import ALLURE_SUIT_TITLE
 
 
-def wait_server_apply_changes(delay: int):
-    with allure.step("Wait a bit till the server applies the changes"):
-        time.sleep(delay)
-
-
 def allure_test_desc_n_input_data(
     desc: str,
     data: any,

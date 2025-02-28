@@ -10,7 +10,6 @@ from shared.assert_helper import (
 from shared.utils import (
     allure_test_desc_n_input_data,
     allure_annotation_fabric,
-    wait_server_apply_changes,
 )
 
 
@@ -33,6 +32,8 @@ def pet_data():
         "id": 12345,
         "name": "Fluffy",
         "category": {"id": 1, "name": "Cats"},
+        "photoUrls": ["https://example.com/photo"],
+        "tags": [{"id": 1, "name": "sometag"}],
         "status": "available",
     }
     return data
@@ -55,16 +56,16 @@ def test_create_pet(pet_api, pet_data):
         status_code, pet = pet_api.create(pet_data)
     assert_status_code_is_ok(status_code)
     assert_fields_match(pet, pet_data, ["name", ["category", "name"], "status"])
-    wait_server_apply_changes(5)
 
 
 @allure_annotation(
     "Retrieve an existing pet",
     "This test verifies that an existing pet can be retrieved by ID.",
 )
-def test_recieve_pet(pet_api, pet_id):
-    with allure.step("Send request to recieve a pet"):
-        status_code, pet = pet_api.recieve(str(pet_id))
+@pytest.mark.flaky(reruns=5, reruns_delay=1)
+def test_retrieve_pet(pet_api, pet_id):
+    with allure.step("Send request to retrieve a pet"):
+        status_code, pet = pet_api.retrieve(str(pet_id))
     assert_status_code_is_ok(status_code)
     with allure.step("Verify a pet IDs match"):
         assert pet["id"] == pet_id
@@ -97,11 +98,11 @@ def test_update_pet_status(pet_api, pet_id):
     "Delete a pet",
     "This test verifies that a pet can be deleted and is no longer retrievable.",
 )
+@pytest.mark.flaky(reruns=5, reruns_delay=1)
 def test_delete_pet(pet_api, pet_id):
     with allure.step("Send request to delete a pet"):
         status_code, _ = pet_api.delete(str(pet_id))
     assert_status_code_is_ok(status_code)
-    wait_server_apply_changes(5)
     with allure.step("Send request to get a pet"):
-        status_code, _ = pet_api.recieve(str(pet_id))
+        status_code, _ = pet_api.retrieve(str(pet_id))
     assert_status_code_is_not_found(status_code)

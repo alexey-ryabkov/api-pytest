@@ -7,10 +7,12 @@ _API_REQUEST_TIMEOUT = 5
 class RestApiClient:
     """Simple REST API client"""
 
-    def __init__(self, base_url):
+    def __init__(self, base_url, api_key: str = None):
         self.base_url = base_url
         self._session = requests.Session()
         self._session.timeout = _API_REQUEST_TIMEOUT
+        if api_key:
+            self._session.headers.update({"Authorization": api_key})
 
     def create(self, data: dict, endpoint: str | None = None):
         """Sends a POST request to create a resource."""
@@ -19,7 +21,7 @@ class RestApiClient:
         )
         return response.status_code, response.json()
 
-    def recieve(self, endpoint: str):
+    def retrieve(self, endpoint: str):
         """Sends a GET request to retrieve a resource"""
         response = self._session.get(self._process_endpoint("GET", endpoint))
         return response.status_code, response.json()
@@ -47,5 +49,6 @@ class RestApiClient:
         endpoint: str | None = None,
     ):
         url = f"{self.base_url}/{endpoint.lstrip('/')}" if endpoint else self.base_url
+        print(f"Send {request_type} request to {url}")
         with allure.step(f"Send {request_type} request to {url}"):
             return url
