@@ -12,8 +12,8 @@ def allure_test_desc_n_input_data(
     data_title: str = None,
 ):
     allure.dynamic.description(
-        f"""{desc}\n\n### Test input{f"\n**{data_title}:**\n" if data_title else ""}\n
-        ```json\n{json.dumps(data, indent=2)}\n```"""
+        f"{desc}\n\n### Test input{f"\n**{data_title}:**\n" if data_title else ""}\n"
+        f"```json\n{json.dumps(data, indent=2)}\n```"
     )
 
 
