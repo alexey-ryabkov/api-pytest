@@ -2,14 +2,21 @@ erDiagram
     Pet {
         int id PK
         string name
-        string category
+        Category category 
+        string[] photoUrls
+        Tag[] tags 
         string status
     }
 
     User {
         int id PK
         string username
+        string firstName
+        string lastName
         string email
+        string password
+        string phone
+        number userStatus
     }
 
     Order {
